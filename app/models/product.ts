@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { productsTable } from "../../src/database/schema.js";
+import { productsTable } from "../../src/database/schema";
 
 export const Product = productsTable;
 const maxLength = 50;

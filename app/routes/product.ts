@@ -1,7 +1,7 @@
 // @ts-check
 import express from "express";
-import { createProduct } from "../commands/product/create.js";
-import { getErrorMessage } from "../../src/utils/error.js";
+import { createProduct } from "../commands/product/create";
+import { getErrorMessage } from "../../src/utils/error";
 const router = express.Router();
 
 router.post("/", async (req, res) => {

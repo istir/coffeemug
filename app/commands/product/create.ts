@@ -1,11 +1,11 @@
-import { db } from "../../../src/database/driver.js";
-import { Product, productInsertSchema } from "../../models/product.js";
+import { db } from "../../../src/database/driver";
+import { CommandResult } from "../../../src/types/command";
+import { ProductInsert, ProductSelect } from "../../../src/types/products";
+import { Product, productInsertSchema } from "../../models/product";
 
-/**
- * @param {ProductInsert} data
- * @returns {Promise<CommandResult<ProductSelect,Error>>}
- */
-export async function createProduct(data) {
+export async function createProduct(
+    data: ProductInsert,
+): Promise<CommandResult<ProductSelect, Error>> {
     try {
         const parsedResult = productInsertSchema.safeParse(data);
         if (!parsedResult.success) {
