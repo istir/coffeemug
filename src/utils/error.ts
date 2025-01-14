@@ -1,3 +1,4 @@
+import { DrizzleError } from "drizzle-orm";
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
@@ -27,4 +28,8 @@ export function notFoundErrorHandler(
 
 function isZodError(error: any): error is ZodError {
     return !!error.flatten;
+}
+
+export function isDrizzleError(error: any): error is DrizzleError {
+    return error?.name === "DrizzleError";
 }

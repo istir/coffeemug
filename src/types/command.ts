@@ -6,6 +6,6 @@ type ErrorCommandResult<ErrorType> = {
 };
 type SuccessCommandResult<Result> = { success: true; data: Result };
 
-export type CommandResult<Result, ErrorType = ZodError> =
+export type CommandResult<Result, ErrorType = ZodError | Error> =
     | SuccessCommandResult<Result>
     | ErrorCommandResult<ErrorType>;
