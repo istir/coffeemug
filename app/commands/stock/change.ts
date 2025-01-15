@@ -1,15 +1,17 @@
-import { and, AnyColumn, DrizzleError, eq, gt, sql } from "drizzle-orm";
+import { and, AnyColumn, eq, gt, inArray, sql } from "drizzle-orm";
 import { db } from "../../../src/database/driver";
-import { Product } from "../../models/product";
+import { Product, ProductSelect } from "../../models/product";
 import { CommandResult } from "../../../src/types/command";
-import { ProductSelect } from "../../../src/types/products";
-import { z } from "zod";
-import { isDrizzleError } from "../../../src/utils/error";
+import {
+    productIdValidator,
+    newStockValidator,
+} from "../../../src/utils/validator";
+import { isDrizzleError } from "../../../src/database/utils";
+import { SQLiteTransaction } from "drizzle-orm/sqlite-core";
+import { LibSQLDatabase } from "drizzle-orm/libsql";
 const increment = (column: AnyColumn, value = 1) => {
     return sql`${column} + ${value}`;
 };
-const newStockValidator = z.number().int().nonnegative();
-const productIdValidator = z.number().int().positive();
 
 export async function restockProduct(
     id: number,
@@ -39,46 +41,47 @@ export async function restockProduct(
     }
 }
 
-export async function sellProduct(
-    id: number,
-): Promise<CommandResult<ProductSelect>> {
+export async function sellProducts(
+    ids: number[],
+    tx: SQLiteTransaction | LibSQLDatabase = db,
+): Promise<CommandResult<ProductSelect[]>> {
     try {
-        const parsedPid = productIdValidator.safeParse(id);
+        const parsedPid = productIdValidator.array().safeParse(ids);
         if (!parsedPid.success) {
             return { success: false, error: parsedPid.error };
         }
         return new Promise((resolve) => {
-            db.transaction(async (tx) => {
-                const result = await tx
+            tx.transaction(async (trx) => {
+                const results = await trx
                     .update(Product)
                     .set({ stock: increment(Product.stock, -1) })
                     .where(
                         and(
-                            eq(Product.id, parsedPid.data),
+                            inArray(Product.id, parsedPid.data),
                             gt(Product.stock, 0),
                         ),
                     )
                     .returning();
 
-                if (!result.length) {
+                if (!results.length) {
                     return resolve({
                         success: false,
                         error: new Error("Valid product not found"),
                     });
                 }
-                const product = result[0];
 
-                const parsedQuantity = newStockValidator.safeParse(
-                    product.stock,
-                );
+                const parsedQuantity = newStockValidator
+                    .array()
+                    .safeParse(results.map((r) => r.stock));
+
                 if (!parsedQuantity.success) {
-                    tx.rollback();
+                    trx.rollback();
                     return resolve({
                         success: false,
                         error: parsedQuantity.error,
                     });
                 }
-                return resolve({ success: true, data: product });
+                return resolve({ success: true, data: results });
             }).catch((error) => {
                 if (isDrizzleError(error)) {
                     if (error.message === "Rollback") {
@@ -86,6 +89,8 @@ export async function sellProduct(
                             success: false,
                             error: new Error("Quantity is too low"),
                         });
+                    } else {
+                        return resolve({ success: false, error });
                     }
                 }
             });
@@ -96,4 +101,15 @@ export async function sellProduct(
             error: error,
         };
     }
+}
+
+export async function sellProduct(
+    id: number,
+): Promise<CommandResult<ProductSelect>> {
+    const result = await sellProducts([id]);
+    if (!result.success) return result;
+    if (!result.data.length) {
+        return { success: false, error: new Error("Failed to sell product") };
+    }
+    return { success: true, data: result.data[0] };
 }

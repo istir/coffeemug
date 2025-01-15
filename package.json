@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "migrate": "drizzle-kit generate && drizzle-kit migrate",
-        "start": "tsx index.ts"
+        "start": "tsx index.ts",
+        "dev": "tsx --watch index.ts"
     },
     "devDependencies": {
         "@types/bun": "latest",

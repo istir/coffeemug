@@ -23,13 +23,10 @@ export function notFoundErrorHandler(
     res: Response,
     _next: NextFunction,
 ) {
+    console.log(_req.method, _req.url, "Not found");
     res.status(404).json({ error: "Not found" });
 }
 
 function isZodError(error: any): error is ZodError {
     return !!error.flatten;
-}
-
-export function isDrizzleError(error: any): error is DrizzleError {
-    return error?.name === "DrizzleError";
 }

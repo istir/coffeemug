@@ -1,0 +1,3 @@
+CREATE UNIQUE INDEX `products_orders_order_id_product_id_unique` ON `products_orders` (`order_id`,`product_id`);--> statement-breakpoint
+ALTER TABLE `products_orders` ALTER COLUMN "order_id" TO "order_id" integer REFERENCES orders(id) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `products_orders` ALTER COLUMN "product_id" TO "product_id" integer REFERENCES products(id) ON DELETE no action ON UPDATE no action;

@@ -4,5 +4,5 @@ import {
     productSelectSchema,
 } from "../../app/models/product";
 
-export type ProductSelect = z.infer<typeof productSelectSchema>;
-export type ProductInsert = z.infer<typeof productInsertSchema>;
+//export type ProductSelect = z.infer<typeof productSelectSchema>;
+//export type ProductInsert = z.infer<typeof productInsertSchema>;

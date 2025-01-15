@@ -1,4 +1,3 @@
-// @ts-check
 import express from "express";
 import { createProduct } from "../commands/product/create";
 import { getErrorMessage } from "../../src/utils/error";
