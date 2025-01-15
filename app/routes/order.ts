@@ -1,4 +1,4 @@
-import express from "express";
+import * as express from "express";
 import { createOrder } from "../commands/order/create";
 import { getErrorMessage } from "../../src/utils/error";
 import { createOrderValidator } from "../../src/utils/validator";

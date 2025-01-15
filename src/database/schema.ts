@@ -23,5 +23,5 @@ export const productsToOrderTable = sqliteTable(
         order_id: int().references(() => ordersTable.id),
         product_id: int().references(() => productsTable.id),
     },
-    (table) => ({ unq: unique().on(table.order_id, table.product_id) }),
+    (table) => [unique().on(table.order_id, table.product_id)],
 );

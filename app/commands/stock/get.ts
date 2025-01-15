@@ -1,8 +1,9 @@
-import { eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { db } from "../../../src/database/driver";
-import { CommandResult } from "../../../src/types/command";
+import type { CommandResult } from "../../../src/types/command";
 import { Product } from "../../models/product";
 import { productIdValidator } from "../../../src/utils/validator";
+import { respondWithGenericCommandError } from "../../../src/utils/error";
 
 export async function getProductsStock(
     ids: number[],
@@ -29,7 +30,7 @@ export async function getProductsStock(
 
         return { success: true, data: result };
     } catch (error) {
-        return { success: false, error };
+        return respondWithGenericCommandError(error);
     }
 }
 
@@ -42,25 +43,3 @@ export async function getProductStock(
     }
     return res;
 }
-
-//export async function getAvailableProductsStock(
-//    ids: number[],
-//): Promise<CommandResult<Record<number, number>>> {
-//    {
-//        const res = await getProductsStock(ids);
-//        if (!res.success) return res;
-//        const products = Object.entries(res.data);
-//        if (
-//            !products.every(
-//                ([key, value]) =>
-//                    ids.includes(Number.parseInt(key)) && value > 0,
-//            )
-//        ) {
-//            return {
-//                success: false,
-//                error: new Error("One or more products are unavailable"),
-//            };
-//        }
-//        return res;
-//    }
-//}

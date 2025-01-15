@@ -1,4 +1,4 @@
-import { DrizzleError } from "drizzle-orm";
+import type { DrizzleError } from "drizzle-orm";
 import { db } from "./driver";
 
 export function isDrizzleError(error: any): error is DrizzleError {
@@ -13,6 +13,7 @@ export async function createTransaction<T extends typeof db, R>(
     cb: (trx: T) => R,
     tx = db,
 ): Promise<R> {
-    // biome-ignore lint/suspicious/noExplicitAny: callback doesn't really have correct typing
+    // this helps with passing transactions to other functions that could interact with database normally or in a transaction.
+    // sadly, it requires some casting
     return tx.transaction(cb as any);
 }

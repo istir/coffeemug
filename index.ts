@@ -1,4 +1,4 @@
-import express from "express";
+import * as express from "express";
 import { env } from "./src/env";
 import { productRouter } from "./app/routes/product";
 import { orderRouter } from "./app/routes/order";

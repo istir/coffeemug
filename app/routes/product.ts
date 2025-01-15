@@ -1,9 +1,8 @@
-import express from "express";
+import * as express from "express";
 import { createProduct } from "../commands/product/create";
 import { getErrorMessage } from "../../src/utils/error";
 import { getProducts } from "../commands/product/get";
 import { restockProduct, sellProduct } from "../commands/stock/change";
-import { z } from "zod";
 const router = express.Router();
 
 router.post("/", async (req, res) => {

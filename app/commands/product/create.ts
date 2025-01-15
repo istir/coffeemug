@@ -1,7 +1,12 @@
 import { db } from "../../../src/database/driver";
-import { CommandResult } from "../../../src/types/command";
-import { ProductInsert, ProductSelect } from "../../../src/types/products";
-import { Product, productInsertSchema } from "../../models/product";
+import type { CommandResult } from "../../../src/types/command";
+import { respondWithGenericCommandError } from "../../../src/utils/error";
+import {
+    Product,
+    productInsertSchema,
+    type ProductInsert,
+    type ProductSelect,
+} from "../../models/product";
 
 export async function createProduct(
     data: ProductInsert,
@@ -26,6 +31,6 @@ export async function createProduct(
         }
         return { success: true, data: result[0] };
     } catch (error) {
-        return { success: false, error: error };
+        return respondWithGenericCommandError(error);
     }
 }

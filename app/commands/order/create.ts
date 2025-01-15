@@ -1,8 +1,8 @@
 import { createTransaction } from "../../../src/database/utils";
-import { CommandResult } from "../../../src/types/command";
+import type { CommandResult } from "../../../src/types/command";
 import { removeDuplicates } from "../../../src/utils/array";
 import { areAllProductsInStock } from "../../../src/utils/stock";
-import { Order, OrderSelect } from "../../models/order";
+import { Order, type OrderSelect } from "../../models/order";
 import { getProducts } from "../product/get";
 import { sellProducts } from "../stock/change";
 

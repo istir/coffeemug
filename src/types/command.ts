@@ -1,6 +1,6 @@
-import { ZodError } from "zod";
+import type { ZodError } from "zod";
 
-type ErrorCommandResult<ErrorType> = {
+export type ErrorCommandResult<ErrorType> = {
     success: false;
     error: ErrorType;
 };

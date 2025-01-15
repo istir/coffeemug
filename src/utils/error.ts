@@ -1,6 +1,6 @@
-import { DrizzleError } from "drizzle-orm";
-import { NextFunction, Request, Response } from "express";
-import { ZodError } from "zod";
+import type { NextFunction, Request, Response } from "express";
+import type { ZodError } from "zod";
+import type { ErrorCommandResult } from "../types/command";
 
 export function getErrorMessage(error: ZodError | Error) {
     if (isZodError(error)) {
@@ -29,4 +29,18 @@ export function notFoundErrorHandler(
 
 function isZodError(error: any): error is ZodError {
     return !!error.flatten;
+}
+
+export function isError(error: any): error is Error {
+    return !!error?.name;
+}
+
+export function respondWithGenericCommandError(
+    error: any,
+): ErrorCommandResult<Error> {
+    if (isError(error)) {
+        return { success: false, error };
+    } else {
+        return { success: false, error: new Error("Unknown error") };
+    }
 }

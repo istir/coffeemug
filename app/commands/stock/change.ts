@@ -1,14 +1,13 @@
-import { and, AnyColumn, eq, gt, inArray, sql } from "drizzle-orm";
+import { and, type AnyColumn, eq, gt, inArray, sql } from "drizzle-orm";
 import { db } from "../../../src/database/driver";
-import { Product, ProductSelect } from "../../models/product";
-import { CommandResult } from "../../../src/types/command";
+import { Product, type ProductSelect } from "../../models/product";
+import type { CommandResult } from "../../../src/types/command";
 import {
     productIdValidator,
     newStockValidator,
 } from "../../../src/utils/validator";
 import { isDrizzleError } from "../../../src/database/utils";
-import { SQLiteTransaction } from "drizzle-orm/sqlite-core";
-import { LibSQLDatabase } from "drizzle-orm/libsql";
+import { respondWithGenericCommandError } from "../../../src/utils/error";
 const increment = (column: AnyColumn, value = 1) => {
     return sql`${column} + ${value}`;
 };
@@ -34,16 +33,13 @@ export async function restockProduct(
             .returning();
         return { success: true, data: result[0] };
     } catch (error) {
-        return {
-            success: false,
-            error: error,
-        };
+        return respondWithGenericCommandError(error);
     }
 }
 
 export async function sellProducts(
     ids: number[],
-    tx: SQLiteTransaction | LibSQLDatabase = db,
+    tx = db,
 ): Promise<CommandResult<ProductSelect[]>> {
     try {
         const parsedPid = productIdValidator.array().safeParse(ids);
@@ -96,10 +92,7 @@ export async function sellProducts(
             });
         });
     } catch (error) {
-        return {
-            success: false,
-            error: error,
-        };
+        return respondWithGenericCommandError(error);
     }
 }
 
