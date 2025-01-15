@@ -1,5 +1,6 @@
 import { createTransaction } from "../../../src/database/utils";
 import { CommandResult } from "../../../src/types/command";
+import { removeDuplicates } from "../../../src/utils/array";
 import { areAllProductsInStock } from "../../../src/utils/stock";
 import { Order, OrderSelect } from "../../models/order";
 import { getProducts } from "../product/get";
@@ -12,7 +13,11 @@ export async function createOrder(
 
     const products = await getProducts(productIds);
     if (!products.success) return products;
-    if (!areAllProductsInStock(products.data)) {
+
+    if (
+        removeDuplicates(productIds).length != products.data.length ||
+        !areAllProductsInStock(products.data)
+    ) {
         return {
             success: false,
             error: new Error("Some products are unavailable"),
